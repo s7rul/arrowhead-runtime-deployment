@@ -26,7 +26,8 @@
 	<modules>
 	    <module>GenerationFesabilityTester</module>
 	    <module>jar-deploy-service</module>
-  	</modules>
+		<module>common</module>
+	</modules>
 		
 	<dependencies>
         <dependency>

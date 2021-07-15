@@ -1,7 +1,7 @@
 package eu.arrowhead.client.skeleton.provider.controller;
 
+import dto.DeployJarRequestDTO;
 import eu.arrowhead.client.skeleton.provider.LocalConstants;
-import eu.arrowhead.client.skeleton.provider.jarFileDeployer.DeployJarRequestDTO;
 import eu.arrowhead.client.skeleton.provider.jarFileDeployer.JarDeploymentHandler;
 import org.springframework.web.bind.annotation.*;
 

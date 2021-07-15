@@ -7,14 +7,25 @@
     	<version>4.1.3.3</version>
   	</parent>
 	
-	<artifactId>arrowhead-client-skeleton-consumer</artifactId>
-	<name>Arrowhead Consumer Skeleton</name>
+	<artifactId>GenerationFeasbilityTester</artifactId>
+	<name>Generation feasibility tester</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpmime</artifactId>
 			<version>4.5.13</version>
+		</dependency>
+		<dependency>
+			<groupId>eu.arrowhead</groupId>
+			<artifactId>common</artifactId>
+			<version>4.1.3.3</version>
+		</dependency>
+		<dependency>
+			<groupId>eu.arrowhead</groupId>
+			<artifactId>common</artifactId>
+			<version>4.1.3.3</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 	
