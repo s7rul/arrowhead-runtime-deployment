@@ -10,3 +10,7 @@
 !GenerationFesabilityTester/*.jar
 !GenerationFesabilityTester/pom.xml
 !jar-deploy-service/pom.xml
+!common
+!common/src
+!common/src/**
+!common/pom.xml
