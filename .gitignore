@@ -1,0 +1,12 @@
+*
+!.gitignore
+!pom.xml
+!GenerationFesabilityTester
+!jar-deploy-service
+!GenerationFesabilityTester/src
+!GenerationFesabilityTester/src/**
+!jar-deploy-service/src
+!jar-deploy-service/src/**
+!GenerationFesabilityTester/*.jar
+!GenerationFesabilityTester/pom.xml
+!jar-deploy-service/pom.xml
