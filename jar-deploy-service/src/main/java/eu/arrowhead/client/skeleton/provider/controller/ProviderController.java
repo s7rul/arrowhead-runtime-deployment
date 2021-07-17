@@ -1,6 +1,7 @@
 package eu.arrowhead.client.skeleton.provider.controller;
 
 import dto.DeployJarRequestDTO;
+import dto.DeployJarResponseDTO;
 import eu.arrowhead.client.skeleton.provider.LocalConstants;
 import eu.arrowhead.client.skeleton.provider.jarFileDeployer.JarDeploymentHandler;
 import org.springframework.web.bind.annotation.*;
@@ -33,9 +34,10 @@ public class ProviderController {
 	*/
 
 	@PostMapping(LocalConstants.JAR_DEPLOY_URL)
-	public String handleJarDeploy(@RequestBody final DeployJarRequestDTO dto) {
+	public DeployJarResponseDTO handleJarDeploy(@RequestBody final DeployJarRequestDTO dto) {
 		handler.deploy(dto.getFile());
-		return "initial success test: " + dto.getPort();
+		DeployJarResponseDTO ret = new DeployJarResponseDTO(DeployJarResponseDTO.Status.INITIAL_OK, 0, dto.getPort());
+		return ret;
 	}
 
 	//-------------------------------------------------------------------------------------------------

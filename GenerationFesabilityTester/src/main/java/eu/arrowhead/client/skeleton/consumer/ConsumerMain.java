@@ -2,6 +2,7 @@ package eu.arrowhead.client.skeleton.consumer;
 
 import GenerationFeasibilityTester.GenerationFeasibilityTester;
 import dto.DeployJarRequestDTO;
+import dto.DeployJarResponseDTO;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -127,9 +128,11 @@ public class ConsumerMain implements ApplicationRunner {
 
 			final HttpMethod httpMethod = HttpMethod.valueOf(orchestrationResult.getMetadata().get(ConsumerConstants.HTTP_METHOD));
 			final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
-			final String sr = arrowheadService.consumeServiceHTTP(String.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(ConsumerConstants.HTTP_METHOD)),
+			final DeployJarResponseDTO sr = arrowheadService.consumeServiceHTTP(DeployJarResponseDTO.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(ConsumerConstants.HTTP_METHOD)),
 					orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
 					getInterface(), token, request, new String[0]);
+
+			logger.info("Response: " + sr.toString());
 		}
 	}
 
