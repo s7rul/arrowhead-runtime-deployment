@@ -1,5 +1,8 @@
 package eu.arrowhead.client.skeleton.provider.jarFileDeployer;
 
+import eu.arrowhead.client.skeleton.provider.ProviderApplicationInitListener;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.Jar;
 
 import java.io.File;
@@ -10,6 +13,8 @@ public class JarRunner implements Runnable {
     String jarName;
     Process proc;
     JarDeploymentHandler handler;
+
+    private final Logger logger = LogManager.getLogger(ProviderApplicationInitListener.class);
 
     public JarRunner(String workingDir, String logPath, String jarName, JarDeploymentHandler handler) {
         this.workingDir = new File(workingDir);
@@ -31,10 +36,9 @@ public class JarRunner implements Runnable {
             System.out.println(e);
         }
         try {
-            synchronized (pb) {
-                pb.wait();
-                this.proc = null;
-            }
+            this.proc.waitFor();
+            logger.info("Jar stopped running.");
+            this.proc = null;
             this.handler.stopped();
         } catch (InterruptedException e) {
             this.handler.stopped();

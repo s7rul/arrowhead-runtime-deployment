@@ -35,8 +35,8 @@ public class ProviderController {
 
 	@PostMapping(LocalConstants.JAR_DEPLOY_URL)
 	public DeployJarResponseDTO handleJarDeploy(@RequestBody final DeployJarRequestDTO dto) {
-		handler.deploy(dto.getFile());
-		DeployJarResponseDTO ret = new DeployJarResponseDTO(DeployJarResponseDTO.Status.INITIAL_OK, 0, dto.getPort());
+		DeployJarResponseDTO.Status status = handler.deploy(dto.getFile());
+		DeployJarResponseDTO ret = new DeployJarResponseDTO(status, 0, dto.getPort());
 		return ret;
 	}
 
