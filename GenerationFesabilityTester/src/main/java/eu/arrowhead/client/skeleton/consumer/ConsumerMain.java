@@ -65,29 +65,35 @@ public class ConsumerMain implements ApplicationRunner {
     	Long providerServiceID = null;
     	Long consumerID = 9l;
 
-    	Long consumerDeviceID = systemRegistry.getDeviceBySystemID(consumerID);
+    	handleGenerationRequest(101L, 9L, systemRegistry);
+
+	}
+
+	private void handleGenerationRequest(long providerServiceId, long consumerId, SystemRegistry systemRegistry) {
+
+		Long consumerDeviceID = systemRegistry.getDeviceBySystemID(consumerId);
 
 
-    	logger.info("Orchestration request for deploy_jar service:");
-    	final ServiceQueryFormDTO serviceQueryForm = new ServiceQueryFormDTO.Builder(ConsumerConstants.DEPLOY_JAR_SERVICE_DEFINITION)
-    																		.interfaces(getInterface())
-    																		.build();
-    	
+		logger.info("Orchestration request for deploy_jar service:");
+		final ServiceQueryFormDTO serviceQueryForm = new ServiceQueryFormDTO.Builder(ConsumerConstants.DEPLOY_JAR_SERVICE_DEFINITION)
+				.interfaces(getInterface())
+				.build();
+
 		final Builder orchestrationFormBuilder = arrowheadService.getOrchestrationFormBuilder();
 		final OrchestrationFormRequestDTO orchestrationFormRequest = orchestrationFormBuilder.requestedService(serviceQueryForm)
-																					   .flag(Flag.MATCHMAKING, true)
-																					   .flag(Flag.OVERRIDE_STORE, true)
-																					   .build();
-		
+				.flag(Flag.MATCHMAKING, true)
+				.flag(Flag.OVERRIDE_STORE, true)
+				.build();
+
 		//printOut(orchestrationFormRequest);
-		
+
 		final OrchestrationResponseDTO orchestrationResponse = arrowheadService.proceedOrchestration(orchestrationFormRequest);
 
 
-		
+
 		logger.info("Orchestration response:");
-		printOut(orchestrationResponse);		
-		
+		printOut(orchestrationResponse);
+
 		if (orchestrationResponse == null) {
 			logger.info("No orchestration response received");
 		} else if (orchestrationResponse.getResponse().isEmpty()) {
@@ -116,11 +122,17 @@ public class ConsumerMain implements ApplicationRunner {
 			}
 
 			validateOrchestrationResult(orchestrationResult, ConsumerConstants.DEPLOY_JAR_SERVICE_DEFINITION);
-			
+
 			logger.info("Create a request:");
 			// create payload
 			File toDeploy = new File("/home/s7rul/IdeaProjects/GenerationFesabilityTester/InterfaceLightweight-1.0.jar");
-			byte[] fileContent = FileUtils.readFileToByteArray(toDeploy);
+			byte[] fileContent = new byte[0];
+			try {
+				fileContent = FileUtils.readFileToByteArray(toDeploy);
+			} catch (IOException e) {
+			    logger.info("Unable to write Base64 string to file: " + toDeploy.getAbsolutePath());
+				e.printStackTrace();
+			}
 			DeployJarRequestDTO request = new DeployJarRequestDTO(Base64.getEncoder().encodeToString(fileContent), 8088);
 
 
@@ -136,8 +148,8 @@ public class ConsumerMain implements ApplicationRunner {
 		}
 	}
 
-    private void printOut(final Object object) {
-    	System.out.println(Utilities.toPrettyJson(Utilities.toJson(object)));
+	private void printOut(final Object object) {
+		System.out.println(Utilities.toPrettyJson(Utilities.toJson(object)));
     }
     
     private String getInterface() {
