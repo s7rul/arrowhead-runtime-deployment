@@ -8,15 +8,19 @@ import org.apache.tomcat.Jar;
 import java.io.File;
 
 public class JarRunner implements Runnable {
-    File workingDir;
-    File log;
-    String jarName;
-    Process proc;
-    JarDeploymentHandler handler;
+    private int id;
+    private Boolean isRunning = false;
+    private File workingDir;
+    private File log;
+    private String jarName;
+    private Process proc;
+    private JarDeploymentHandler handler;
+
 
     private final Logger logger = LogManager.getLogger(ProviderApplicationInitListener.class);
 
-    public JarRunner(String workingDir, String logPath, String jarName, JarDeploymentHandler handler) {
+    public JarRunner(int id,String workingDir, String logPath, String jarName, JarDeploymentHandler handler) {
+        this.id = id;
         this.workingDir = new File(workingDir);
         this.log = new File(logPath);
         this.jarName = jarName;
@@ -31,19 +35,29 @@ public class JarRunner implements Runnable {
         pb.redirectErrorStream(true);
         pb.redirectOutput(log); // set log file
         try {
-            this.proc = pb.start();
+            synchronized (this) {
+                this.proc = pb.start();
+                this.isRunning = true;
+            }
         } catch (Exception e) {
             System.out.println(e);
         }
         try {
             this.proc.waitFor();
             logger.info("Jar stopped running.");
-            this.proc = null;
-            this.handler.stopped();
+            synchronized (this) {
+                this.proc = null;
+                this.isRunning = false;
+            }
+            this.handler.stopped(this.id);
         } catch (InterruptedException e) {
-            this.handler.stopped();
+            this.handler.stopped(this.id);
             e.printStackTrace();
         }
+    }
+
+    public synchronized Boolean isRunning() {
+        return this.isRunning;
     }
 
     public synchronized void stop() {

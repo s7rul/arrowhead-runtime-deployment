@@ -5,7 +5,6 @@ import eu.arrowhead.client.skeleton.provider.ProviderApplicationInitListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,16 +13,28 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class JarDeploymentHandler {
+    private static class RunnerHolder {
+        int id;
+        JarRunner runner;
+        Thread thread;
+
+        RunnerHolder(int id, JarRunner runner, Thread thread) {
+            this.id = id;
+            this.runner = runner;
+            this.thread = thread;
+        }
+    }
+
+
     private String jarFilesDirectory;
-    private Boolean isDeployed;
-    private JarRunner deployment;
+    private int idCounter = 0;
+    private List<RunnerHolder> runners = new LinkedList<>();
 
     private final Logger logger = LogManager.getLogger(ProviderApplicationInitListener.class);
 
-    private static List<JarDeploymentHandler> handlers = new LinkedList<>();
+    private static Integer noDeployed;
 
     public JarDeploymentHandler(String jarFilesDirectory) {
-        this.isDeployed = false;
         this.jarFilesDirectory = jarFilesDirectory;
 
         File directory = new File(this.jarFilesDirectory);
@@ -36,24 +47,21 @@ public class JarDeploymentHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        this.handlers.add(this);
     }
 
     public DeployJarResponseDTO.Status deploy(String base64JarFile) {
         logger.info("Deploying jarfile.");
-        if (isDeployed) {
-            logger.info("jar deployment handler is full.");
-            return DeployJarResponseDTO.Status.FULL;
-        }
-        this.isDeployed = true;
+
         File f = new File(this.jarFilesDirectory + File.separator + "translator.jar");
 
-        this.deployment = new JarRunner(this.jarFilesDirectory,
+        Integer id = this.idCounter++;
+
+        JarRunner runner = new JarRunner(id, this.jarFilesDirectory,
                 "/home/s7rul/tmp-log.log",
-                "translator.jar",
+                ("translator"+id.toString()+".jar"),
                 this);
-        Thread thread = new Thread(this.deployment);
+        Thread thread = new Thread(runner);
+        this.runners.add(new RunnerHolder(id, runner, thread));
 
         logger.info("Runner and thread created.");
 
@@ -78,30 +86,45 @@ public class JarDeploymentHandler {
             e.printStackTrace();
         }
 
-        synchronized (this){
-            if (this.isDeployed) {
-                logger.info("It is still up all ok.");
-                return DeployJarResponseDTO.Status.INITIAL_OK;
-            } else {
-                logger.info("It has terminated.");
-                return DeployJarResponseDTO.Status.CRASH_ON_START;
+        if (runner.isRunning()) {
+            logger.info("It is still up all ok.");
+            return DeployJarResponseDTO.Status.INITIAL_OK;
+        } else {
+            logger.info("It has terminated.");
+            return DeployJarResponseDTO.Status.CRASH_ON_START;
+        }
+    }
+
+    private synchronized void stop(int id) {
+        for (RunnerHolder n: this.runners) {
+            if (n.id == id) {
+                n.runner.stop();
             }
         }
     }
 
-    private synchronized void stop() {
-        this.deployment.stop();
-    }
-
-    public static synchronized void stopAll() {
-        for (JarDeploymentHandler n: handlers) {
-            n.stop();
+    public synchronized void stopAll() {
+        for (RunnerHolder n: this.runners) {
+            n.runner.stop();
         }
     }
 
-    void stopped() {
+    void stopped(int id) {
         synchronized (this) {
-            this.isDeployed = false;
+            RunnerHolder holder = null;
+            int ind = -1;
+            for (int i = 0; i < this.runners.size(); i++) {
+                RunnerHolder n = this.runners.get(i);
+                if (n.id == id) {
+                    holder = n;
+                    ind = i;
+                    break;
+                }
+            }
+            if (holder != null) {
+                holder.thread.interrupt();
+                this.runners.remove(ind);
+            }
             logger.info("Runner signaled it stopped running.");
         }
     }
