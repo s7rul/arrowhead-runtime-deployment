@@ -120,6 +120,7 @@ public class ConsumerMain implements ApplicationRunner {
 				logger.info("It will probably not run, aborting.");
 				return;
 			}
+			logger.info("The interface was determined to be able to run on the device.");
 
 			validateOrchestrationResult(orchestrationResult, ConsumerConstants.DEPLOY_JAR_SERVICE_DEFINITION);
 
