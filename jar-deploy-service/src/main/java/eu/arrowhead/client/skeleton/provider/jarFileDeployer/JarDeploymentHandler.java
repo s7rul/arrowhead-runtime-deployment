@@ -52,9 +52,9 @@ public class JarDeploymentHandler {
     public DeployJarResponseDTO.Status deploy(String base64JarFile) {
         logger.info("Deploying jarfile.");
 
-        File f = new File(this.jarFilesDirectory + File.separator + "translator.jar");
-
         Integer id = this.idCounter++;
+
+        File f = new File(this.jarFilesDirectory + File.separator + ("translator"+id.toString()+".jar"));
 
         JarRunner runner = new JarRunner(id, this.jarFilesDirectory,
                 "/home/s7rul/tmp-log.log",
