@@ -49,7 +49,7 @@ public class JarDeploymentHandler {
         }
     }
 
-    public DeployJarResponseDTO.Status deploy(String base64JarFile) {
+    public DeployJarResponseDTO deploy(String base64JarFile, int port) {
         logger.info("Deploying jarfile.");
 
         Integer id = this.idCounter++;
@@ -76,7 +76,7 @@ public class JarDeploymentHandler {
             System.out.println(e);
             e.printStackTrace();
             logger.info("Something went wrong writing file or starting thread.");
-            return DeployJarResponseDTO.Status.CRASH_ON_START;
+            return new DeployJarResponseDTO(DeployJarResponseDTO.Status.CRASH_ON_START, id, port);
         }
 
         try {
@@ -88,10 +88,10 @@ public class JarDeploymentHandler {
 
         if (runner.isRunning()) {
             logger.info("It is still up all ok.");
-            return DeployJarResponseDTO.Status.INITIAL_OK;
+            return new DeployJarResponseDTO(DeployJarResponseDTO.Status.INITIAL_OK, id, port);
         } else {
             logger.info("It has terminated.");
-            return DeployJarResponseDTO.Status.CRASH_ON_START;
+            return new DeployJarResponseDTO(DeployJarResponseDTO.Status.CRASH_ON_START, id, port);
         }
     }
 

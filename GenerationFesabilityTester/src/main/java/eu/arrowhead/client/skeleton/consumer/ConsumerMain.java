@@ -125,7 +125,7 @@ public class ConsumerMain implements ApplicationRunner {
 
 			logger.info("Create a request:");
 			// create payload
-			File toDeploy = new File("../ITR_8089.jar");
+			File toDeploy = new File("../ITR_8090.jar");
 			byte[] fileContent = new byte[0];
 			try {
 				fileContent = FileUtils.readFileToByteArray(toDeploy);
