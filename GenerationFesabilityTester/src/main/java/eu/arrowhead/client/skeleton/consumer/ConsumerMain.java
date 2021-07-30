@@ -136,9 +136,6 @@ public class ConsumerMain implements ApplicationRunner {
 			}
 			DeployJarRequestDTO request = new DeployJarRequestDTO(Base64.getEncoder().encodeToString(fileContent), 8089);
 
-
-
-
 			final HttpMethod httpMethod = HttpMethod.valueOf(orchestrationResult.getMetadata().get(ConsumerConstants.HTTP_METHOD));
 			final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
 			final DeployJarResponseDTO sr = arrowheadService.consumeServiceHTTP(DeployJarResponseDTO.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(ConsumerConstants.HTTP_METHOD)),

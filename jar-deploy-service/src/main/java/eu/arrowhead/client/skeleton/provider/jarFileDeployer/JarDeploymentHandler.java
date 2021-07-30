@@ -65,9 +65,12 @@ public class JarDeploymentHandler {
 
         Integer id = this.idCounter++;
 
+        logger.info("Checking for port collision.");
         if (!isPortAvailable(port)) {
+            logger.info("Port collision detected aborting.");
             return new DeployJarResponseDTO(DeployJarResponseDTO.Status.PORT_COLLISION, id, SocketUtils.findAvailableTcpPort());
         }
+        logger.info("No port collision detected continuing.");
 
         File f = new File(this.jarFilesDirectory + File.separator + ("translator"+id.toString()+".jar"));
 
