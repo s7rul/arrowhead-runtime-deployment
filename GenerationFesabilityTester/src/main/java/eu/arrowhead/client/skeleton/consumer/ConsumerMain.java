@@ -126,7 +126,7 @@ public class ConsumerMain implements ApplicationRunner {
 
 			logger.info("Create a request:");
 			// create payload
-			File toDeploy = new File("../ITR_8090.jar");
+			File toDeploy = new File("../ITR_8089.jar");
 			byte[] fileContent = new byte[0];
 			try {
 				fileContent = FileUtils.readFileToByteArray(toDeploy);
@@ -134,7 +134,7 @@ public class ConsumerMain implements ApplicationRunner {
 			    logger.info("Unable to write Base64 string to file: " + toDeploy.getAbsolutePath());
 				e.printStackTrace();
 			}
-			DeployJarRequestDTO request = new DeployJarRequestDTO(Base64.getEncoder().encodeToString(fileContent), 8088);
+			DeployJarRequestDTO request = new DeployJarRequestDTO(Base64.getEncoder().encodeToString(fileContent), 8089);
 
 
 

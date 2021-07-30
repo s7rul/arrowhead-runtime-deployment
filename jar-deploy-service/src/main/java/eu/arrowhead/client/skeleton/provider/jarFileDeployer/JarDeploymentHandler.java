@@ -5,6 +5,7 @@ import eu.arrowhead.client.skeleton.provider.ProviderApplicationInitListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.springframework.util.SocketUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,10 +50,24 @@ public class JarDeploymentHandler {
         }
     }
 
+    // Only work for tcp
+    private Boolean isPortAvailable(int port) {
+        try {
+            int p = SocketUtils.findAvailableTcpPort(port, port);
+            return (p == port);
+        } catch (IllegalStateException e) {
+            return false;
+        }
+    }
+
     public DeployJarResponseDTO deploy(String base64JarFile, int port) {
         logger.info("Deploying jarfile.");
 
         Integer id = this.idCounter++;
+
+        if (!isPortAvailable(port)) {
+            return new DeployJarResponseDTO(DeployJarResponseDTO.Status.PORT_COLLISION, id, SocketUtils.findAvailableTcpPort());
+        }
 
         File f = new File(this.jarFilesDirectory + File.separator + ("translator"+id.toString()+".jar"));
 
