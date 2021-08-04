@@ -27,6 +27,8 @@
 	    <module>GenerationFesabilityTester</module>
 	    <module>jar-deploy-service</module>
 		<module>common</module>
+        <module>ITRGeneratorMock</module>
+		<module>tester-client</module>
 	</modules>
 		
 	<dependencies>

@@ -14,3 +14,12 @@
 !common/src
 !common/src/**
 !common/pom.xml
+!ITRGeneratorMock
+!ITRGeneratorMock/src
+!ITRGeneratorMock/src/**
+!ITRGeneratorMock/pom.xml
+!ITRGeneratorMock/*.jar
+!tester-client
+!tester-client/src
+!tester-client/src/**
+!tester-client/pom.xml
