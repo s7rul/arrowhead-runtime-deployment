@@ -28,7 +28,7 @@ public class JarDeploymentHandler {
 
 
     private String jarFilesDirectory;
-    private int idCounter = 0;
+    private int idCounter = 0; // Potential duplicate ids when this roles over TODO: fix it
     private List<RunnerHolder> runners = new LinkedList<>();
 
     private final Logger logger = LogManager.getLogger(ProviderApplicationInitListener.class);
@@ -88,7 +88,6 @@ public class JarDeploymentHandler {
             org.apache.commons.io.FileUtils.writeByteArrayToFile(f, byteJarFile);
 
             thread.start(); // the ITR watchdog  and runner is started here
-            // If this thread is still running then the process is still running
             logger.info("Thread started.");
         } catch (Exception e) {
             System.out.println(e);
@@ -98,13 +97,13 @@ public class JarDeploymentHandler {
         }
 
         try {
-            logger.info("Waiting for 2 sec to see if ITR is still up.");
+            logger.info("Waiting for 2 sec to see if ITR is still up."); // takes aprox 1,5 s to start ITR
             Thread.sleep(2000L);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        if (runner.isRunning()) {
+        if (runner.isRunning()) { // ask the runner thread if the process is still running
             logger.info("It is still up all ok.");
             return new DeployJarResponseDTO(DeployJarResponseDTO.Status.INITIAL_OK, id, port);
         } else {
@@ -113,7 +112,7 @@ public class JarDeploymentHandler {
         }
     }
 
-    private synchronized void stop(int id) {
+    public synchronized void stop(int id) {
         for (RunnerHolder n: this.runners) {
             if (n.id == id) {
                 n.runner.stop();
@@ -127,10 +126,13 @@ public class JarDeploymentHandler {
         }
     }
 
+    // Used to remove old threads
     void stopped(int id) {
         synchronized (this) {
             RunnerHolder holder = null;
             int ind = -1;
+
+            // Linear search is okay here as long as the number of deployed ITRs are small.
             for (int i = 0; i < this.runners.size(); i++) {
                 RunnerHolder n = this.runners.get(i);
                 if (n.id == id) {

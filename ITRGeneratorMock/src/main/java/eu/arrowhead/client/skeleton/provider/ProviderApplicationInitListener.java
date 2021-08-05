@@ -81,6 +81,9 @@ public class ProviderApplicationInitListener extends ApplicationInitListener {
 				//LocalConstants.GENERATE_ITR_URL, HttpMethod.GET);
 		arrowheadService.forceRegisterServiceToServiceRegistry(testServiceRequest);
 		//TODO: implement here any custom behavior on application start up
+
+		checkCoreSystemReachability(CoreSystem.ORCHESTRATOR);
+		arrowheadService.updateCoreServiceURIs(CoreSystem.ORCHESTRATOR);
 	}
 	
 	//-------------------------------------------------------------------------------------------------

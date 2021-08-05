@@ -85,7 +85,7 @@ public class ProviderController {
 				.flag(OrchestrationFlags.Flag.OVERRIDE_STORE, true)
 				.build();
 
-		//printOut(orchestrationFormRequest);
+		printOut(orchestrationFormRequest);
 
 		final OrchestrationResponseDTO orchestrationResponse = arrowheadService.proceedOrchestration(orchestrationFormRequest);
 

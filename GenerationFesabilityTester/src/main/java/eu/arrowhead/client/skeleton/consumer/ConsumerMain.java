@@ -85,7 +85,7 @@ public class ConsumerMain implements ApplicationRunner {
 				.flag(Flag.OVERRIDE_STORE, true)
 				.build();
 
-		//printOut(orchestrationFormRequest);
+		printOut(orchestrationFormRequest);
 
 		final OrchestrationResponseDTO orchestrationResponse = arrowheadService.proceedOrchestration(orchestrationFormRequest);
 
