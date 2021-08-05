@@ -36,6 +36,7 @@ public class ProviderController {
 	//=================================================================================================
 	// members
 	private final Logger logger = LogManager.getLogger( ProviderController.class );
+	private final SystemRegistry systemRegistry = new SystemRegistry();
 
 	@Autowired
 	private ArrowheadService arrowheadService;
@@ -50,8 +51,14 @@ public class ProviderController {
 
 	@PostMapping(LocalConstants.GENERATE_ITR_URL)
 	public GenerateITRResponseDTO generateITRService(@RequestBody final GenerateITRRequestDTO dto) {
-		return null;
+		return handleGenerationRequest(dto.getProviderServiceId(), dto.getConsumerSystemId(), systemRegistry);
 	}
+	/*
+	@GetMapping(LocalConstants.GENERATE_ITR_URL)
+	public String generateITRService() {
+		return "Hoppsan";
+	}
+	*/
 
 	//-------------------------------------------------------------------------------------------------
 	@GetMapping(path = CommonConstants.ECHO_URI)
@@ -62,7 +69,7 @@ public class ProviderController {
 	//-------------------------------------------------------------------------------------------------
 	//TODO: implement here your provider related REST end points
 
-	private Boolean handleGenerationRequest(long providerServiceId, long consumerId, SystemRegistry systemRegistry) {
+	private GenerateITRResponseDTO handleGenerationRequest(long providerServiceId, long consumerId, SystemRegistry systemRegistry) {
 
 		Long consumerDeviceID = systemRegistry.getDeviceBySystemID(consumerId);
 
@@ -101,7 +108,7 @@ public class ProviderController {
 
 			if (orchestrationResult == null) {
 				logger.info("No way to deploy found, aborting.");
-				return false;
+				return new GenerateITRResponseDTO(GenerateITRResponseDTO.Status.UNABLE_TO_GENERATE, "", 0, "");
 			}
 
 			logger.info("Estimating whether or not the interface can be run on the device.");
@@ -109,7 +116,7 @@ public class ProviderController {
 
 			if (!tester.generationFeasibilityByDeviceID(consumerDeviceID)) {
 				logger.info("It will probably not run, aborting.");
-				return false;
+				return new GenerateITRResponseDTO(GenerateITRResponseDTO.Status.UNABLE_TO_GENERATE, "", 0, "");
 			}
 			logger.info("The interface was determined to be able to run on the device.");
 
@@ -118,6 +125,9 @@ public class ProviderController {
 			logger.info("Create a request:");
 			// create payload
 			File toDeploy = new File("../ITR_8089.jar");
+			int port = 8089;
+			String url = "/weatherstation/indoortemperature";
+			String ip = "127.0.0.1";
 			byte[] fileContent = new byte[0];
 			try {
 				fileContent = FileUtils.readFileToByteArray(toDeploy);
@@ -136,13 +146,13 @@ public class ProviderController {
 			logger.info("Response: " + sr.toString());
 
 			if (sr.getStatus() == DeployJarResponseDTO.Status.INITIAL_OK) {
-				return true;
+				return new GenerateITRResponseDTO(GenerateITRResponseDTO.Status.GENERATION_DONE, ip, port, url);
 			} else {
 				// do more stuff here (with port and stuff)
-				return false;
+				return new GenerateITRResponseDTO(GenerateITRResponseDTO.Status.UNABLE_TO_GENERATE, "", 0, "");
 			}
 		}
-		return false;
+		return new GenerateITRResponseDTO(GenerateITRResponseDTO.Status.UNABLE_TO_GENERATE, "", 0, "");
 	}
 
 	private void printOut(final Object object) {

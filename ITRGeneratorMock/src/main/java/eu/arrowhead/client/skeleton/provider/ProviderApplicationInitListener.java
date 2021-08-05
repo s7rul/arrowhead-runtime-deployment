@@ -78,6 +78,7 @@ public class ProviderApplicationInitListener extends ApplicationInitListener {
 		final ServiceRegistryRequestDTO testServiceRequest = createServiceRegistryRequest(
 				LocalConstants.GENERATE_ITR_SERVICE_DEFINITION,
 				LocalConstants.GENERATE_ITR_URL, HttpMethod.POST);
+				//LocalConstants.GENERATE_ITR_URL, HttpMethod.GET);
 		arrowheadService.forceRegisterServiceToServiceRegistry(testServiceRequest);
 		//TODO: implement here any custom behavior on application start up
 	}

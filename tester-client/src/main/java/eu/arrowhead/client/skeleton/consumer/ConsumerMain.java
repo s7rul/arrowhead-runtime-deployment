@@ -1,6 +1,8 @@
 package eu.arrowhead.client.skeleton.consumer;
 
 import dto.DeployJarResponseDTO;
+import dto.GenerateITRRequestDTO;
+import dto.GenerateITRResponseDTO;
 import eu.arrowhead.client.library.ArrowheadService;
 import eu.arrowhead.common.CommonConstants;
 import eu.arrowhead.common.SSLProperties;
@@ -73,13 +75,16 @@ public class ConsumerMain implements ApplicationRunner {
 			logger.info("Orchestration ok doing stuff...");
 			OrchestrationResultDTO orchestrationResult = orchestrationResponse.getResponse().get(0);
 
+			//create request
+			GenerateITRRequestDTO request = new GenerateITRRequestDTO(0L, 9L);
+
 			final HttpMethod httpMethod = HttpMethod.valueOf(orchestrationResult.getMetadata().get(ConsumerConstants.HTTP_METHOD));
 			final String token = orchestrationResult.getAuthorizationTokens() == null ? null : orchestrationResult.getAuthorizationTokens().get(getInterface());
-			final String sr = arrowheadService.consumeServiceHTTP(String.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(ConsumerConstants.HTTP_METHOD)),
-					orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(),
-					getInterface(), token, null, new String[0]);
+			final GenerateITRResponseDTO sr = arrowheadService.consumeServiceHTTP(GenerateITRResponseDTO.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(ConsumerConstants.HTTP_METHOD)), orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(), getInterface(), token, request, new String[0]);
+			//final String sr = arrowheadService.consumeServiceHTTP(String.class, HttpMethod.valueOf(orchestrationResult.getMetadata().get(ConsumerConstants.HTTP_METHOD)), orchestrationResult.getProvider().getAddress(), orchestrationResult.getProvider().getPort(), orchestrationResult.getServiceUri(), getInterface(), token, request, new String[0]);
 
-			logger.info("Response: " + sr);
+			logger.info("Response: ");
+			printOut(sr);
 		}
 
 	}

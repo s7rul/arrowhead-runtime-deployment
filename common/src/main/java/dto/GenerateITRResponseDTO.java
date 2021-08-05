@@ -6,12 +6,14 @@ public class GenerateITRResponseDTO {
         GENERATION_DONE // The ITR is up and running and usable.
     }
 
-    private final Status status;
-    private final String addressITR;
-    private final int portITR;
-    private final String urlITR;
+    private Status status;
+    private String addressITR;
+    private Integer portITR;
+    private String urlITR;
 
-    public GenerateITRResponseDTO(Status status, String addressITR, int portITR, String urlITR) {
+    public GenerateITRResponseDTO() {}
+
+    public GenerateITRResponseDTO(Status status, String addressITR, Integer portITR, String urlITR) {
         this.status = status;
         this.addressITR = addressITR;
         this.portITR = portITR;
